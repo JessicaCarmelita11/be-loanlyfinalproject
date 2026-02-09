@@ -9,6 +9,7 @@ import com.example.loanlyFinalProject.dto.request.LoginRequest;
 import com.example.loanlyFinalProject.dto.request.RegisterRequest;
 import com.example.loanlyFinalProject.dto.response.AuthResponse;
 import com.example.loanlyFinalProject.security.CustomUserDetailsService;
+import com.example.loanlyFinalProject.security.JwtAuthenticationFilter;
 import com.example.loanlyFinalProject.security.JwtService;
 import com.example.loanlyFinalProject.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +38,8 @@ class AuthControllerTest {
   @MockBean private JwtService jwtService;
 
   @MockBean private CustomUserDetailsService customUserDetailsService;
+
+  @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Test
   @DisplayName("Register - Should return 200 with token")
