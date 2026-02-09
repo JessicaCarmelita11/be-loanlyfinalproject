@@ -12,6 +12,7 @@ import com.example.loanlyFinalProject.security.CustomUserDetailsService;
 import com.example.loanlyFinalProject.security.JwtAuthenticationFilter;
 import com.example.loanlyFinalProject.security.JwtService;
 import com.example.loanlyFinalProject.service.AuthService;
+import com.example.loanlyFinalProject.service.TokenBlacklistService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class AuthControllerTest {
   @MockBean private CustomUserDetailsService customUserDetailsService;
 
   @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+  @MockBean private TokenBlacklistService tokenBlacklistService;
 
   @Test
   @DisplayName("Register - Should return 200 with token")
