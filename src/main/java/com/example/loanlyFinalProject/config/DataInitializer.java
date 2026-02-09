@@ -244,57 +244,57 @@ public class DataInitializer implements CommandLineRunner {
 
     List<Plafond> plafonds = new ArrayList<>();
 
-    // 1. Plus: 500k - 3jt
+    // 2. Plus
     plafonds.add(
         Plafond.builder()
             .name("Plus")
-            .description("Pinjaman ringan untuk kebutuhan sehari-hari")
-            .maxAmount(new BigDecimal("3000000"))
+            .description("Plafond Plus dengan limit maksimal Rp 5.000.000")
+            .maxAmount(new BigDecimal("5000000"))
             .isActive(true)
             .build());
 
-    // 2. Bronze: 3jt - 10jt
+    // 3. Bronze
     plafonds.add(
         Plafond.builder()
             .name("Bronze")
-            .description("Pinjaman menengah untuk modal usaha kecil")
-            .maxAmount(new BigDecimal("10000000"))
+            .description("Plafond Bronze dengan limit maksimal Rp 15.000.000")
+            .maxAmount(new BigDecimal("15000000"))
             .isActive(true)
             .build());
 
-    // 3. Silver: 10jt - 25jt
+    // 4. Silver
     plafonds.add(
         Plafond.builder()
             .name("Silver")
-            .description("Pinjaman untuk pengembangan bisnis")
+            .description("Plafond Silver dengan limit maksimal Rp 25.000.000")
             .maxAmount(new BigDecimal("25000000"))
             .isActive(true)
             .build());
 
-    // 4. Gold: 25jt - 50jt
+    // 5. Gold
     plafonds.add(
         Plafond.builder()
             .name("Gold")
-            .description("Pinjaman prioritas dengan limit tinggi")
+            .description("Plafond Gold dengan limit maksimal Rp 50.000.000")
             .maxAmount(new BigDecimal("50000000"))
             .isActive(true)
             .build());
 
-    // 5. Diamond: 50jt - 100jt
+    // 6. Diamond
     plafonds.add(
         Plafond.builder()
             .name("Diamond")
-            .description("Pinjaman eksklusif untuk nasabah terpilih")
+            .description("Plafond Diamond dengan limit maksimal Rp 100.000.000")
             .maxAmount(new BigDecimal("100000000"))
             .isActive(true)
             .build());
 
-    // 6. VVIP: > 100jt
+    // 7. VVIP
     plafonds.add(
         Plafond.builder()
             .name("VVIP")
-            .description("Pinjaman khusus nasabah prioritas utama")
-            .maxAmount(new BigDecimal("500000000"))
+            .description("Plafond VVIP dengan limit maksimal Rp 200.000.000")
+            .maxAmount(new BigDecimal("200000000"))
             .isActive(true)
             .build());
 
