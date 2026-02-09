@@ -11,7 +11,6 @@ import com.example.loanlyFinalProject.dto.response.AuthResponse;
 import com.example.loanlyFinalProject.entity.Role;
 import com.example.loanlyFinalProject.entity.User;
 import com.example.loanlyFinalProject.exception.DuplicateResourceException;
-import com.example.loanlyFinalProject.exception.ResourceNotFoundException;
 import com.example.loanlyFinalProject.repository.PasswordResetTokenRepository;
 import com.example.loanlyFinalProject.repository.RoleRepository;
 import com.example.loanlyFinalProject.repository.UserRepository;
@@ -29,7 +28,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -147,9 +148,13 @@ class AuthServiceTest {
     LoginRequest request =
         LoginRequest.builder().usernameOrEmail("testuser").password("password123").build();
 
-    when(userRepository.findByUsernameOrEmail("testuser", "testuser"))
-        .thenReturn(Optional.of(testUser));
-    when(jwtService.generateToken(any(CustomUserDetails.class))).thenReturn("jwt-token");
+    CustomUserDetails userDetails = new CustomUserDetails(testUser);
+    Authentication authentication = mock(Authentication.class);
+    when(authentication.getPrincipal()).thenReturn(userDetails);
+    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+        .thenReturn(authentication);
+    when(jwtService.generateToken(any(Authentication.class))).thenReturn("jwt-token");
+    when(jwtService.getExpirationTime()).thenReturn(86400000L);
 
     // Act
     AuthResponse response = authService.login(request);
@@ -161,16 +166,16 @@ class AuthServiceTest {
   }
 
   @Test
-  @DisplayName("Login - Should throw exception when user not found")
+  @DisplayName("Login - Should throw exception when authentication fails")
   void login_ShouldThrowException_WhenUserNotFound() {
     // Arrange
     LoginRequest request =
         LoginRequest.builder().usernameOrEmail("nonexistent").password("password123").build();
 
-    when(userRepository.findByUsernameOrEmail("nonexistent", "nonexistent"))
-        .thenReturn(Optional.empty());
+    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+        .thenThrow(new BadCredentialsException("Invalid credentials"));
 
     // Act & Assert
-    assertThrows(ResourceNotFoundException.class, () -> authService.login(request));
+    assertThrows(BadCredentialsException.class, () -> authService.login(request));
   }
 }

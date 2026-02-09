@@ -8,12 +8,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.loanlyFinalProject.dto.request.LoginRequest;
 import com.example.loanlyFinalProject.dto.request.RegisterRequest;
 import com.example.loanlyFinalProject.dto.response.AuthResponse;
+import com.example.loanlyFinalProject.security.CustomUserDetailsService;
 import com.example.loanlyFinalProject.security.JwtService;
 import com.example.loanlyFinalProject.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(AuthController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @DisplayName("AuthController Unit Tests")
 class AuthControllerTest {
@@ -32,6 +35,8 @@ class AuthControllerTest {
   @MockBean private AuthService authService;
 
   @MockBean private JwtService jwtService;
+
+  @MockBean private CustomUserDetailsService customUserDetailsService;
 
   @Test
   @DisplayName("Register - Should return 200 with token")
