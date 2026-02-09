@@ -12,10 +12,12 @@ import com.example.loanlyFinalProject.entity.Role;
 import com.example.loanlyFinalProject.entity.User;
 import com.example.loanlyFinalProject.exception.DuplicateResourceException;
 import com.example.loanlyFinalProject.exception.ResourceNotFoundException;
+import com.example.loanlyFinalProject.repository.PasswordResetTokenRepository;
 import com.example.loanlyFinalProject.repository.RoleRepository;
 import com.example.loanlyFinalProject.repository.UserRepository;
 import com.example.loanlyFinalProject.security.CustomUserDetails;
 import com.example.loanlyFinalProject.security.JwtService;
+import com.google.firebase.auth.FirebaseAuth;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -43,6 +45,12 @@ class AuthServiceTest {
   @Mock private JwtService jwtService;
 
   @Mock private AuthenticationManager authenticationManager;
+
+  @Mock private EmailService emailService;
+
+  @Mock private FirebaseAuth firebaseAuth;
+
+  @Mock private PasswordResetTokenRepository passwordResetTokenRepository;
 
   @InjectMocks private AuthService authService;
 

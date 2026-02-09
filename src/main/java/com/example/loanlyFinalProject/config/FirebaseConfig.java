@@ -39,7 +39,14 @@ public class FirebaseConfig {
   }
 
   @org.springframework.context.annotation.Bean
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+      name = "firebase.enabled",
+      havingValue = "true",
+      matchIfMissing = true)
   public com.google.firebase.auth.FirebaseAuth firebaseAuth() {
+    if (FirebaseApp.getApps().isEmpty()) {
+      return null;
+    }
     return com.google.firebase.auth.FirebaseAuth.getInstance();
   }
 }
