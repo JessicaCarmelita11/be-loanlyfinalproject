@@ -4,6 +4,8 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.springframework.context.annotation.Configuration;
@@ -15,11 +17,21 @@ public class FirebaseConfig {
   @PostConstruct
   public void initialize() {
     try {
-      ClassPathResource serviceAccount = new ClassPathResource("firebase-service-account.json");
+      InputStream serviceAccountStream = null;
+      File file = new File("firebase-service-account.json");
 
-      if (serviceAccount.exists()) {
-        InputStream serviceAccountStream = serviceAccount.getInputStream();
+      if (file.exists()) {
+        System.out.println("Loading Firebase config from file system: " + file.getAbsolutePath());
+        serviceAccountStream = new FileInputStream(file);
+      } else {
+        System.out.println("Loading Firebase config from classpath");
+        ClassPathResource resource = new ClassPathResource("firebase-service-account.json");
+        if (resource.exists()) {
+          serviceAccountStream = resource.getInputStream();
+        }
+      }
 
+      if (serviceAccountStream != null) {
         FirebaseOptions options =
             FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
@@ -31,7 +43,7 @@ public class FirebaseConfig {
         }
       } else {
         System.out.println(
-            "Firebase service account file not found. Push notifications will not work.");
+            "Firebase service account file not found (checked file system and classpath). Push notifications will not work.");
       }
     } catch (IOException e) {
       System.err.println("Error initializing Firebase: " + e.getMessage());

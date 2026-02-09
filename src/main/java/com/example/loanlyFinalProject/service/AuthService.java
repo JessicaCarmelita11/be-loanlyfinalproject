@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,7 +45,9 @@ public class AuthService {
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
   private final EmailService emailService;
-  private final FirebaseAuth firebaseAuth;
+
+  @Autowired(required = false)
+  private FirebaseAuth firebaseAuth;
 
   @Transactional
   public AuthResponse register(RegisterRequest request) {
@@ -177,6 +180,9 @@ public class AuthService {
   public AuthResponse googleLogin(GoogleLoginRequest request) {
     try {
       // 1. Verify Firebase ID Token
+      if (firebaseAuth == null) {
+        throw new InvalidTokenException("Firebase is not configured. Google Login is unavailable.");
+      }
       FirebaseToken decodedToken = firebaseAuth.verifyIdToken(request.getFirebaseToken());
       String email = decodedToken.getEmail();
       String name = decodedToken.getName();
