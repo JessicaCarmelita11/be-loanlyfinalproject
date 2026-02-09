@@ -40,6 +40,7 @@ public class DataInitializer implements CommandLineRunner {
     initializeMarketing();
     initializeBranchManager();
     initializeBackOffice();
+    initializePlafonds();
     initializeTenorRates();
   }
 
@@ -233,6 +234,78 @@ public class DataInitializer implements CommandLineRunner {
 
       log.info("Created back office user: backoffice / BackOffice@123");
     }
+  }
+
+  private void initializePlafonds() {
+    if (plafondRepository.count() > 0) {
+      log.info("Plafond data already exists");
+      return;
+    }
+
+    List<Plafond> plafonds = new ArrayList<>();
+
+    // 1. Plus: 500k - 3jt
+    plafonds.add(
+        Plafond.builder()
+            .name("Plus")
+            .description("Pinjaman ringan untuk kebutuhan sehari-hari")
+            .minAmount(new BigDecimal("500000"))
+            .maxAmount(new BigDecimal("3000000"))
+            .isActive(true)
+            .build());
+
+    // 2. Bronze: 3jt - 10jt
+    plafonds.add(
+        Plafond.builder()
+            .name("Bronze")
+            .description("Pinjaman menengah untuk modal usaha kecil")
+            .minAmount(new BigDecimal("3000000"))
+            .maxAmount(new BigDecimal("10000000"))
+            .isActive(true)
+            .build());
+
+    // 3. Silver: 10jt - 25jt
+    plafonds.add(
+        Plafond.builder()
+            .name("Silver")
+            .description("Pinjaman untuk pengembangan bisnis")
+            .minAmount(new BigDecimal("10000000"))
+            .maxAmount(new BigDecimal("25000000"))
+            .isActive(true)
+            .build());
+
+    // 4. Gold: 25jt - 50jt
+    plafonds.add(
+        Plafond.builder()
+            .name("Gold")
+            .description("Pinjaman prioritas dengan limit tinggi")
+            .minAmount(new BigDecimal("25000000"))
+            .maxAmount(new BigDecimal("50000000"))
+            .isActive(true)
+            .build());
+
+    // 5. Diamond: 50jt - 100jt
+    plafonds.add(
+        Plafond.builder()
+            .name("Diamond")
+            .description("Pinjaman eksklusif untuk nasabah terpilih")
+            .minAmount(new BigDecimal("50000000"))
+            .maxAmount(new BigDecimal("100000000"))
+            .isActive(true)
+            .build());
+
+    // 6. VVIP: > 100jt
+    plafonds.add(
+        Plafond.builder()
+            .name("VVIP")
+            .description("Pinjaman khusus nasabah prioritas utama")
+            .minAmount(new BigDecimal("100000000"))
+            .maxAmount(new BigDecimal("500000000"))
+            .isActive(true)
+            .build());
+
+    plafondRepository.saveAll(plafonds);
+    log.info("Initialized {} request types (Plafond)", plafonds.size());
   }
 
   private void initializeTenorRates() {
