@@ -25,33 +25,37 @@ import org.springframework.web.bind.annotation.*;
 public class PlafondController {
 
   private final PlafondService plafondService;
+  private final com.example.loanlyFinalProject.service.TenorRateService tenorRateService;
 
   // ========== PUBLIC ENDPOINTS (No Auth Required) ==========
 
   @GetMapping("/api/public/plafonds")
-  @Operation(
-      summary = "Get all active plafonds (Public)",
-      description = "Returns list of all active plafonds without authentication")
+  @Operation(summary = "Get all active plafonds (Public)", description = "Returns list of all active plafonds without authentication")
   public ResponseEntity<ApiResponse<List<PlafondResponse>>> getAllActivePlafonds() {
     List<PlafondResponse> plafonds = plafondService.getAllActivePlafonds();
     return ResponseEntity.ok(ApiResponse.success("Plafonds retrieved successfully", plafonds));
   }
 
   @GetMapping("/api/public/plafonds/{id}")
-  @Operation(
-      summary = "Get plafond by ID (Public)",
-      description = "Returns plafond details by ID without authentication")
+  @Operation(summary = "Get plafond by ID (Public)", description = "Returns plafond details by ID without authentication")
   public ResponseEntity<ApiResponse<PlafondResponse>> getPlafondById(@PathVariable Long id) {
     PlafondResponse plafond = plafondService.getPlafondById(id);
     return ResponseEntity.ok(ApiResponse.success("Plafond retrieved successfully", plafond));
   }
 
+  @GetMapping("/api/public/plafonds/{id}/rates")
+  @Operation(summary = "Get tenor rates by plafond ID (Public)", description = "Returns tenor rates for a specific plafond without authentication")
+  public ResponseEntity<ApiResponse<List<com.example.loanlyFinalProject.dto.response.TenorRateResponse>>> getRatesByPlafondIdPublic(
+      @PathVariable Long id) {
+    List<com.example.loanlyFinalProject.dto.response.TenorRateResponse> rates = tenorRateService
+        .getRatesByPlafondId(id);
+    return ResponseEntity.ok(ApiResponse.success("Tenor rates retrieved successfully", rates));
+  }
+
   // ========== ADMIN ENDPOINTS (Requires SUPER_ADMIN role) ==========
 
   @GetMapping("/api/admin/plafonds")
-  @Operation(
-      summary = "Get all plafonds with pagination (Admin)",
-      description = "Returns paginated list of all plafonds")
+  @Operation(summary = "Get all plafonds with pagination (Admin)", description = "Returns paginated list of all plafonds")
   @SecurityRequirement(name = "Bearer Authentication")
   @PreAuthorize("hasRole('SUPER_ADMIN')")
   public ResponseEntity<ApiResponse<Page<PlafondResponse>>> getAllPlafonds(
@@ -61,10 +65,9 @@ public class PlafondController {
       @RequestParam(defaultValue = "asc") String sortDir,
       @RequestParam(required = false) String search) {
 
-    Sort sort =
-        sortDir.equalsIgnoreCase("desc")
-            ? Sort.by(sortBy).descending()
-            : Sort.by(sortBy).ascending();
+    Sort sort = sortDir.equalsIgnoreCase("desc")
+        ? Sort.by(sortBy).descending()
+        : Sort.by(sortBy).ascending();
     Pageable pageable = PageRequest.of(page, size, sort);
 
     Page<PlafondResponse> plafonds;
@@ -78,9 +81,7 @@ public class PlafondController {
   }
 
   @GetMapping("/api/admin/plafonds/{id}")
-  @Operation(
-      summary = "Get plafond by ID (Admin)",
-      description = "Returns plafond details by ID for admin")
+  @Operation(summary = "Get plafond by ID (Admin)", description = "Returns plafond details by ID for admin")
   @SecurityRequirement(name = "Bearer Authentication")
   @PreAuthorize("hasRole('SUPER_ADMIN')")
   public ResponseEntity<ApiResponse<PlafondResponse>> getPlafondByIdAdmin(@PathVariable Long id) {
@@ -121,9 +122,7 @@ public class PlafondController {
   // ========== CUSTOMER ENDPOINTS ==========
 
   @PostMapping("/api/customer/plafonds/{plafondId}/register")
-  @Operation(
-      summary = "Register to plafond (Customer)",
-      description = "Customer registers interest in a plafond")
+  @Operation(summary = "Register to plafond (Customer)", description = "Customer registers interest in a plafond")
   @SecurityRequirement(name = "Bearer Authentication")
   @PreAuthorize("hasAnyRole('CUSTOMER', 'SUPER_ADMIN')")
   public ResponseEntity<ApiResponse<Object>> registerToPlafond(
@@ -133,9 +132,7 @@ public class PlafondController {
   }
 
   @GetMapping("/api/customer/my-plafonds")
-  @Operation(
-      summary = "Get my registered plafonds (Customer)",
-      description = "Returns list of plafonds customer has registered to")
+  @Operation(summary = "Get my registered plafonds (Customer)", description = "Returns list of plafonds customer has registered to")
   @SecurityRequirement(name = "Bearer Authentication")
   @PreAuthorize("hasAnyRole('CUSTOMER', 'SUPER_ADMIN')")
   public ResponseEntity<ApiResponse<List<PlafondResponse>>> getMyPlafonds(
