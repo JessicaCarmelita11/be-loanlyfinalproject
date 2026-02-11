@@ -5,6 +5,7 @@ import com.example.loanlyFinalProject.entity.UserPlafond;
 import com.example.loanlyFinalProject.exception.ResourceNotFoundException;
 import com.example.loanlyFinalProject.repository.PlafondDocumentRepository;
 import com.example.loanlyFinalProject.repository.UserPlafondRepository;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +30,20 @@ public class StorageService {
   @Value("${file.upload-dir:uploads}")
   private String uploadDir;
 
+  private Path rootLocation;
+
+  @PostConstruct
+  public void init() {
+    try {
+      this.rootLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
+      log.info("Initializing storage service. Upload root directory: {}", this.rootLocation);
+      Files.createDirectories(this.rootLocation);
+    } catch (IOException e) {
+      log.error("Could not initialize storage location", e);
+      throw new RuntimeException("Could not initialize storage location", e);
+    }
+  }
+
   /** Upload document to LOCAL storage and save metadata to database */
   @Transactional
   public PlafondDocument uploadPlafondDocument(
@@ -45,12 +60,16 @@ public class StorageService {
             "%s_%s%s", documentType.name().toLowerCase(), UUID.randomUUID().toString(), extension);
 
     // Create directory structure: uploads/plafonds/{userPlafondId}/
+    // Create directory structure: uploads/plafonds/{userPlafondId}/
     String relativePath = String.format("plafonds/%d/%s", userPlafondId, uniqueFilename);
-    Path uploadPath = Paths.get(uploadDir, "plafonds", String.valueOf(userPlafondId));
+    Path uploadPath = this.rootLocation.resolve("plafonds").resolve(String.valueOf(userPlafondId));
 
     try {
       // Create directories if not exist
-      Files.createDirectories(uploadPath);
+      if (!Files.exists(uploadPath)) {
+        Files.createDirectories(uploadPath);
+        log.info("Created directory: {}", uploadPath);
+      }
 
       // Save file
       Path filePath = uploadPath.resolve(uniqueFilename);
